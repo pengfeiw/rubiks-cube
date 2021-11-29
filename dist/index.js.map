@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sources":["../src/index.ts"],"sourcesContent":["const a = () => {\n    console.log(\"This is a test\");\n}\n\na();\n"],"names":[],"mappings":";;;IAAA,IAAM,CAAC,GAAG;QACN,OAAO,CAAC,GAAG,CAAC,gBAAgB,CAAC,CAAC;IAClC,CAAC,CAAA;IAED,CAAC,EAAE;;;;;;"}

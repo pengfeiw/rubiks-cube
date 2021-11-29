@@ -1,0 +1,23 @@
+{
+    "name": "rubik-cube",
+    "version": "1.0.0",
+    "description": "ThreeJs开发的魔方（rubik's cube）",
+    "main": "dist/index.js",
+    "module": "dist/index.es.js",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "rimraf dist && rollup -c",
+        "dev": "rimraf dist && rollup -c rollupdev.config.js"
+    },
+    "author": "Wang Pengfei <pengfeixc@sina.com> (https://pengfeixc.com)",
+    "license": "ISC",
+    "dependencies": {},
+    "devDependencies": {
+        "rimraf": "^3.0.2",
+        "rollup": "^2.60.1",
+        "rollup-plugin-typescript2": "^0.31.1",
+        "typescript": "^4.5.2"
+    }
+}

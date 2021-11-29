@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "sourceMap": true,
+        "baseUrl": ".",
+        "declaration": true,
+        "declarationDir": "./dist",
+        "module": "Es2015",
+        "target": "es5",
+        "outDir": "./dist",
+        "noImplicitAny": true,
+        "lib": [
+            "ES5",
+            "ES6",
+            "DOM"
+        ],
+        "strict": true,
+    },
+    "include": ["./src/**/*.ts"],
+    "exclude": [
+        "node_modules"
+    ]
+}
