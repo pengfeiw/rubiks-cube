@@ -1,1 +1,1 @@
-declare const a: () => void;
+export {};

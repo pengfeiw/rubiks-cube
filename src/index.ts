@@ -1,5 +1,7 @@
-const a = () => {
-    console.log("This is a test");
-}
+import Rubiks from "./rubiks/index";
 
-a();
+const container = document.getElementById("container");
+
+if (container) {
+    new Rubiks(container);
+}

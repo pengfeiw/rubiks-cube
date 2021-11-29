@@ -8,6 +8,7 @@
         "target": "es5",
         "outDir": "./dist",
         "noImplicitAny": true,
+        "moduleResolution": "Node",
         "lib": [
             "ES5",
             "ES6",
