@@ -1,4 +1,4 @@
-import {PerspectiveCamera, Renderer, Scene, WebGLRenderer} from "three";
+import {PerspectiveCamera, Color, Renderer, Scene, WebGLRenderer} from "three";
 import createCamera from "./components/camera";
 import createScene from "./components/scene";
 import createRenderer from "./components/renderer";

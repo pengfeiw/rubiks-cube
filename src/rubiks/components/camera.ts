@@ -8,7 +8,7 @@ const createCamera = () => {
         100
     );
 
-    camera.position.set(0, 0, 30);
+    camera.position.set(0, 0, 15);
 
     return camera;
 };
