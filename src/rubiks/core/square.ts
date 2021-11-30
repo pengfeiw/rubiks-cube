@@ -1,6 +1,6 @@
 import {Shape, ShapeGeometry, MeshBasicMaterial, Mesh, Color} from "three";
 
-const createSquare = (color: Color) => {
+export const createSquare = (color: Color) => {
     const squareShape = new Shape();
     const x = 0, y = 0;
     // top
@@ -22,9 +22,20 @@ const createSquare = (color: Color) => {
 
     const geometry = new ShapeGeometry(squareShape);
     const material = new MeshBasicMaterial({color});
-    const mesh = new Mesh(geometry, material);
+    const mesh = new SquareMesh(geometry, material);
 
     return mesh;
 };
 
-export default createSquare;
+export class SquareMesh extends Mesh<ShapeGeometry, MeshBasicMaterial> {
+    public constructor(geometry: ShapeGeometry, material: MeshBasicMaterial) {
+        super(geometry, material);
+    }
+
+    public clone(recursive?: boolean) {
+        const cloned = super.clone(recursive);
+        cloned.material = this.material.clone();
+        cloned.geometry = this.geometry.clone();
+        return cloned;
+    }
+}
