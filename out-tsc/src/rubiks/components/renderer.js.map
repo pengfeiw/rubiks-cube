@@ -1,0 +1,1 @@
+{"version":3,"file":"renderer.js","sourceRoot":"","sources":["../../../../src/rubiks/components/renderer.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,aAAa,EAAC,MAAM,OAAO,CAAC;AAEpC,MAAM,cAAc,GAAG,GAAG,EAAE;IACxB,MAAM,QAAQ,GAAG,IAAI,aAAa,CAAC,EAAC,SAAS,EAAE,IAAI,EAAC,CAAC,CAAC;IAEtD,OAAO,QAAQ,CAAC;AACpB,CAAC,CAAC;AAEF,eAAe,cAAc,CAAC"}

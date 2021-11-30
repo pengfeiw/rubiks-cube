@@ -1,22 +1,12 @@
-import typescript from "rollup-plugin-typescript2";
-import commonjs from "@rollup/plugin-commonjs";
-import{nodeResolve} from "@rollup/plugin-node-resolve";
+import merge from 'deepmerge';
+import {createSpaConfig} from '@open-wc/building-rollup';
 
-export default {
-    input: 'src/index.ts',
-    output: {
-        file: "dist/index.js",
-        name: "rubik",
-        format: "iife",
-        sourcemap: true
-    },
-    plugins: [
-        typescript({typescript: require("typescript")}),
-        commonjs({
-            include: ["node_modules/**", "src/index.ts"],
-            ignoreGlobal: false,
-            sourceMap: false
-        }),
-        nodeResolve({browser: true, preferBuiltins: false})
-    ]
-};
+const baseConfig = createSpaConfig({
+    developmentMode: process.env.ROLLUP_WATCH === 'true',
+    injectServiceWorker: false
+});
+
+export default merge(baseConfig, {
+    // any <script type="module"> inside will be bundled by Rollup
+    input: './example/index.html'
+});

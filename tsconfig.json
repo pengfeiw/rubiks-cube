@@ -1,23 +1,20 @@
 {
     "compilerOptions": {
-        "sourceMap": true,
-        "baseUrl": ".",
-        "declaration": true,
-        "declarationDir": "./dist",
-        "module": "Es2015",
-        "target": "es5",
-        "outDir": "./dist",
-        "noImplicitAny": true,
-        "moduleResolution": "Node",
+        "target": "es2018",
+        "module": "esnext",
+        "moduleResolution": "node",
+        "noEmitOnError": true,
         "lib": [
-            "ES5",
-            "ES6",
+            "es2017",
             "DOM"
         ],
         "strict": true,
+        "esModuleInterop": false,
+        "outDir": "out-tsc",
+        "rootDir": "./",
+        "sourceMap": true
     },
-    "include": ["./src/**/*.ts"],
-    "exclude": [
-        "node_modules"
+    "include": [
+        "./src/**/*.ts"
     ]
 }

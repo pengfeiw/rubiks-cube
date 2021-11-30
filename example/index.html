@@ -1,9 +1,23 @@
 <html>
-    <head>
-        <title>Rubik's cube</title>
-    </head>
-    <body>
-        <div id="container"></div>
-        <script src="../dist/index.js"></script>
-    </body>
+
+<head>
+    <title>Rubik's cube</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            height: 100vh;
+            width: 100vw;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+    <script type="module" src="../out-tsc/src/index.js"></script>
+</body>
+
 </html>
