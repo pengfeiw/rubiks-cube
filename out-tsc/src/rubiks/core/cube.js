@@ -1,4 +1,4 @@
-import { Color, Group, Vector2 } from "three";
+import { Color, Group, Vector2, Matrix4 } from "three";
 import { createSquare } from "./square";
 const colors = [
     "red",
@@ -8,7 +8,7 @@ const colors = [
     "cyan",
     "blue",
 ];
-export const createCube = () => {
+export const createCube2 = () => {
     // gap = 0.1
     const squarePos = [
         new Vector2(-1.1, 1.1),
@@ -54,7 +54,56 @@ export const createCube = () => {
         planes[i].translateZ(transforms[i][0]);
     }
     const cube = new Group();
-    planes.forEach((item) => cube.add(item));
+    for (let i = planes.length - 1; i >= 0; i--) {
+        planes[i].updateMatrix();
+        for (let j = planes[i].children.length - 1; j >= 0; j--) {
+            const cell = planes[i].children[j];
+            cell.applyMatrix4(planes[i].matrix);
+            cube.add(cell);
+        }
+    }
+    return cube;
+};
+export const createCube = () => {
+    const translates = [
+        new Vector2(-1.1, 1.1),
+        new Vector2(0, 1.1),
+        new Vector2(1.1, 1.1),
+        new Vector2(-1.1, 0),
+        new Vector2(0, 0),
+        new Vector2(1.1, 0),
+        new Vector2(-1.1, -1.1),
+        new Vector2(0, -1.1),
+        new Vector2(1.1, -1.1)
+    ];
+    // z, rotateX, rotateY
+    const transforms = [
+        [1.7, Math.PI * 0.5, 0],
+        [1.7, -Math.PI * 0.5, 0],
+        [1.7, 0, Math.PI * 0.5],
+        [1.7, 0, -Math.PI * 0.5],
+        [1.7, 0, 0],
+        [1.7, Math.PI, 0], // 后
+    ];
+    const cube = new Group();
+    for (let i = 0; i < transforms.length; i++) {
+        const square = createSquare(new Color(colors[i]));
+        for (let j = 0; j < translates.length; j++) {
+            const s = square.clone();
+            s.translateX(translates[j].x);
+            s.translateY(translates[j].y);
+            const mat = new Matrix4();
+            if (transforms[i][1] !== 0) {
+                mat.multiply(new Matrix4().makeRotationX(transforms[i][1]));
+            }
+            if (transforms[i][2] !== 0) {
+                mat.multiply(new Matrix4().makeRotationY(transforms[i][2]));
+            }
+            mat.multiply(new Matrix4().makeTranslation(0, 0, transforms[i][0]));
+            s.applyMatrix4(mat);
+            cube.add(s);
+        }
+    }
     return cube;
 };
 //# sourceMappingURL=cube.js.map

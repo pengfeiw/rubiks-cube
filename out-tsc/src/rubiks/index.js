@@ -1,6 +1,8 @@
 import createCamera from "./components/camera";
 import createScene from "./components/scene";
 import createRenderer from "./components/renderer";
+import { createControls } from "./systems/controls";
+import Loop from "./systems/loop";
 import { createCube } from "./core/cube";
 const setSize = (container, camera, renderer) => {
     // Set the camera's aspect ratio
@@ -17,6 +19,10 @@ class Rubiks {
         this.scene = createScene("black");
         this.renderer = createRenderer();
         container.appendChild(this.renderer.domElement);
+        this.controls = createControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = true;
+        this.loop = new Loop(this.camera, this.scene, this.renderer);
+        this.loop.updatables.push(this.controls);
         const cube = createCube();
         this.scene.add(cube);
         // auto resize
@@ -27,7 +33,7 @@ class Rubiks {
         this.render();
     }
     render() {
-        this.renderer.render(this.scene, this.camera);
+        this.loop.start();
     }
 }
 export default Rubiks;
