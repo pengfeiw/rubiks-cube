@@ -54,14 +54,26 @@ class Control {
 
     public mouseMoveHandle(event: MouseEvent) {
         if (this.mouseDown) {
-            const dx = event.movementX / 100;
-            const dy = -event.movementY / 100;
+            const x = (event.offsetX / this.domElement.width) * 2 - 1;
+            const y = -(event.offsetY / this.domElement.height) * 2 + 1;
 
-            const moveVect = new Vector2(dx, dy);
-            const rotateDir = moveVect.rotateAround(new Vector2(0, 0), Math.PI * 0.5);
+            this.raycaster.setFromCamera({x, y}, this.camera);
 
-            rotateAroundWorldAxis(this.cube, new Vector3(rotateDir.x, rotateDir.y, 0), Math.sqrt(dx * dx + dy * dy));
-            this.renderer.render(this.scene, this.camera);
+            const intersects = this.raycaster.intersectObjects(this.cube.squares);
+
+            if (intersects.length > 0) {
+                intersects.sort((item) => item.distance);
+                const squear = intersects[0].object as SquareMesh;
+            } else {
+                const dx = event.movementX / 100;
+                const dy = -event.movementY / 100;
+
+                const moveVect = new Vector2(dx, dy);
+                const rotateDir = moveVect.rotateAround(new Vector2(0, 0), Math.PI * 0.5);
+
+                rotateAroundWorldAxis(this.cube, new Vector3(rotateDir.x, rotateDir.y, 0), Math.sqrt(dx * dx + dy * dy));
+                this.renderer.render(this.scene, this.camera);
+            }
         }
     }
 }
