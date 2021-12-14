@@ -1,5 +1,6 @@
-import {ColorRepresentation, Vector3} from "three";
+import {Vector3} from "three";
 
+type ColorRepresentation = string | number;
 
 interface CubeElement {
     color: ColorRepresentation;
@@ -26,7 +27,7 @@ class CubeData {
     };
 
     private initElements() {
-        const border = this.cubeOrder / 2;
+        const border = this.cubeOrder / 2 - 0.5;
 
         // top and bottom
         for (let x = -border; x <= border; x++) {

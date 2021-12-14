@@ -1,4 +1,5 @@
 import {Color, Group, Object3D, ColorRepresentation, Vector2, Matrix4, CubeReflectionMapping} from "three";
+import CubeData from "./cubeData";
 import {createSquare, SquareMesh} from "./square";
 
 const colors: ColorRepresentation[] = [
@@ -122,4 +123,25 @@ export const createCube = () => {
     }
 
     return cube;
+};
+
+export class Cube extends Group {
+    private data: CubeData;
+    public constructor(order = 3) {
+        super();
+
+        this.data = new CubeData(order);
+        
+        for (let i = 0; i < this.data.elements.length; i++) {
+            const square = createSquare(new Color(this.data.elements[i].color)); 
+            square.scale.set(0.9, 0.9, 0.9);
+            const posX = this.data.elements[i].pos.x + this.data.elements[i].normal.x * 0.5;
+            const posY = this.data.elements[i].pos.y + this.data.elements[i].normal.y * 0.5;
+            const posZ = this.data.elements[i].pos.z + this.data.elements[i].normal.z * 0.5;
+            square.position.set(posX, posY, posZ);
+            square.lookAt(this.data.elements[i].pos.add(this.data.elements[i].normal))
+
+            this.add(square);
+        }
+    }
 };

@@ -5,7 +5,7 @@ import createRenderer from "./components/renderer";
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import {createControls} from "./systems/controls";
 import Loop from "./systems/loop";
-import {createCube} from "./core/cube";
+import {createCube, Cube} from "./core/cube";
 
 const setSize = (container: Element, camera: PerspectiveCamera, renderer: WebGLRenderer) => {
     // Set the camera's aspect ratio
@@ -35,7 +35,7 @@ class Rubiks {
         this.loop = new Loop(this.camera, this.scene, this.renderer);
         this.loop.updatables.push(this.controls);
 
-        const cube = createCube();
+        const cube = new Cube(5);
         this.scene.add(cube);
 
         // auto resize
