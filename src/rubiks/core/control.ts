@@ -1,6 +1,7 @@
-import {PerspectiveCamera, Scene, Vector2, Vector3, WebGLRenderer} from "three";
+import {Color, Mesh, PerspectiveCamera, Raycaster, Scene, Vector2, Vector3, WebGLRenderer} from "three";
 import {Cube} from "./cube";
 import {rotateAroundWorldAxis} from "../util/transform";
+import {SquareMesh} from "./square";
 
 class Control {
     private renderer: WebGLRenderer;
@@ -11,6 +12,7 @@ class Control {
     private get domElement() {
         return this.renderer.domElement;
     }
+    private raycaster = new Raycaster();
     public constructor(camera: PerspectiveCamera, scene: Scene, renderer: WebGLRenderer, cube: Cube) {
         this.cube = cube;
         this.renderer = renderer;
@@ -26,8 +28,24 @@ class Control {
         this.domElement.addEventListener("mousemove", this.mouseMoveHandle.bind(this));
     }
 
-    public mouseDownHandle() {
+    public mouseDownHandle(event: MouseEvent) {
         this.mouseDown = true;
+
+        // // 测试：Raycaster
+        // const x = (event.offsetX / this.domElement.width) * 2 - 1;
+        // const y = -(event.offsetY / this.domElement.height) * 2 + 1;
+
+        // this.raycaster.setFromCamera({x, y}, this.camera);
+
+        // const intersects = this.raycaster.intersectObjects(this.cube.squares);
+
+        // if (intersects.length > 0) {
+        //     intersects.sort((item) => item.distance);
+        //     (intersects[0].object as SquareMesh).material.color = new Color(Math.random() * 0xFFFFFF);
+
+        //     console.log((intersects[0].object as SquareMesh).element.pos);
+        //     this.renderer.render(this.scene, this.camera);
+        // }
     }
 
     public mouseUpHandle() {
