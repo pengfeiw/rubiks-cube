@@ -2,7 +2,7 @@ import {Vector3} from "three";
 
 type ColorRepresentation = string | number;
 
-interface CubeElement {
+export interface CubeElement {
     color: ColorRepresentation;
     pos: Vector3;
     normal: Vector3;
