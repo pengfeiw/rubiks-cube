@@ -1,4 +1,4 @@
-import {Color, Group, Object3D, ColorRepresentation, Vector2, Matrix4, CubeReflectionMapping} from "three";
+import {Color, Group} from "three";
 import CubeData from "./cubeData";
 import {createSquare, SquareMesh} from "./square";
 
