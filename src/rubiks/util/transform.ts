@@ -10,3 +10,13 @@ export const rotateAroundWorldAxis = (object: Object3D, axis: Vector3, radians: 
 
     object.rotation.setFromRotationMatrix(object.matrix);
 };
+
+export const ndcToScreen = (ndc: {x: number; y: number}, winW: number, winH: number) => {
+    const halfW = winW * 0.5;
+    const halfH = winH * 0.5;
+
+    const x = (ndc.x * halfW) + halfW;
+    const y = halfH - (ndc.y * halfH);
+
+    return {x, y};
+};
