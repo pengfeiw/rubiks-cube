@@ -4,6 +4,19 @@ import {ndcToScreen} from "../util/transform";
 import CubeData from "./cubeData";
 import {createSquare, SquareMesh} from "./square";
 
+/**
+ * 获取square向里平移0.5的方块大小的位置
+ * @param square 
+ * @param squareSize 
+ * @returns 
+ */
+const getTemPos = (square: SquareMesh, squareSize: number) => {
+    const moveVect = square.element.normal.clone().normalize().multiplyScalar(-0.5 * squareSize);
+    const pos = square.element.pos.clone();
+
+    return pos.add(moveVect);
+};
+
 export class Cube extends Group {
     private data: CubeData;
     public get squares() {
@@ -40,21 +53,21 @@ export class Cube extends Group {
         let square1: SquareMesh | undefined;
         let square2: SquareMesh | undefined;
         for (let i = 0; i < commonDirSquares.length; i++) {
-            if (squareNormal.x === 0) {
+            if (squareNormal.x !== 0) {
                 if (commonDirSquares[i].element.pos.y === squarePos.y) {
                     square1 = commonDirSquares[i];
                 }
                 if (commonDirSquares[i].element.pos.z === squarePos.z) {
                     square2 = commonDirSquares[i];
                 }
-            } else if (squareNormal.y === 0) {
+            } else if (squareNormal.y !== 0) {
                 if (commonDirSquares[i].element.pos.x === squarePos.x) {
                     square1 = commonDirSquares[i];
                 }
                 if (commonDirSquares[i].element.pos.z === squarePos.z) {
                     square2 = commonDirSquares[i];
                 }
-            } else if (squareNormal.z === 0) {
+            } else if (squareNormal.z !== 0) {
                 if (commonDirSquares[i].element.pos.x === squarePos.x) {
                     square1 = commonDirSquares[i];
                 }
@@ -76,7 +89,7 @@ export class Cube extends Group {
         const square2ScreenPos = this.getSquareScreenPos(square2, camera, winSize) as Vector2;
 
         // 记录可能旋转的四个方向
-        const squareDirs:{
+        const squareDirs: {
             screenDir: Vector2; // 屏幕方向向量
             startSquare: SquareMesh; // 代表方向的起始square，用于记录旋转的local方向
             endSquare: SquareMesh; // 代表方向的终止square，用于记录旋转的local方向
@@ -120,20 +133,21 @@ export class Cube extends Group {
 
         // 旋转轴：用法向量与旋转的方向的叉积计算
         const rotateDirLocal = rotateDir.endSquare.element.pos.clone().sub(rotateDir.startSquare.element.pos).normalize();
-        const rotateAxisLocal = rotateDir.startSquare.element.pos.clone().cross(rotateDirLocal).normalize(); // 旋转的轴
+        const rotateAxisLocal = squareNormal.clone().cross(rotateDirLocal).normalize(); // 旋转的轴
 
         // 旋转的角度：使用 screenDir 在旋转方向上的投影长度，投影长度越长，旋转角度越大
         const screenDirProjectRotateDirLen = Math.cos(minAngle) * screenDir.length();
-        const rotateAnglePI = screenDirProjectRotateDirLen / 200 * Math.PI; // 旋转角度
+        const rotateAnglePI = screenDirProjectRotateDirLen / 1000 * Math.PI; // 旋转角度
 
         // 旋转的方块：由 controlSquare 位置到要旋转的方块的位置的向量，与旋转的轴是垂直的，通过这一特性可以筛选出所有要旋转的方块
         const rotateSquares: SquareMesh[] = [];
+        const controlTemPos = getTemPos(controlSquare, this.data.elementSize);
+
         for (let i = 0; i < this.squares.length; i++) {
-            if (!this.squares[i].element.pos.equals(controlSquare.element.pos)) {
-                const squareVec = controlSquare.element.pos.clone().sub(this.squares[i].element.pos);
-                if (squareVec.dot(rotateAxisLocal) === 0) {
-                    rotateSquares.push(this.squares[i]);
-                }
+            const squareTemPos = getTemPos(this.squares[i], this.data.elementSize);
+            const squareVec = controlTemPos.clone().sub(squareTemPos);
+            if (squareVec.dot(rotateAxisLocal) === 0) {
+                rotateSquares.push(this.squares[i]);
             }
         }
 

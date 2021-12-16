@@ -24,14 +24,14 @@ export const createSquare = (color: Color, element: CubeElement) => {
     const geometry = new ShapeGeometry(squareShape);
     const material = new MeshBasicMaterial({color});
     const mesh = new SquareMesh(element, geometry, material);
-
+    
     mesh.scale.set(0.9, 0.9, 0.9);
-    const posX = element.pos.x + element.normal.x * 0.5;
-    const posY = element.pos.y + element.normal.y * 0.5;
-    const posZ = element.pos.z + element.normal.z * 0.5;
+    const posX = element.pos.x;
+    const posY = element.pos.y;
+    const posZ = element.pos.z;
     mesh.position.set(posX, posY, posZ);
-    mesh.lookAt(element.pos.add(element.normal));
 
+    mesh.lookAt(element.pos.clone().add(element.normal));
     return mesh;
 };
 
