@@ -136,10 +136,6 @@ export class Cube extends Group {
             const rotateDirLocal = rotateDir.endSquare.element.pos.clone().sub(rotateDir.startSquare.element.pos).normalize();
             const rotateAxisLocal = squareNormal.clone().cross(rotateDirLocal).normalize(); // 旋转的轴
 
-            // 旋转的角度：使用 screenDir 在旋转方向上的投影长度，投影长度越长，旋转角度越大
-            const screenDirProjectRotateDirLen = Math.cos(minAngle) * screenDir.length();
-            const rotateAnglePI = screenDirProjectRotateDirLen / 1000 * Math.PI; // 旋转角度
-
             // 旋转的方块：由 controlSquare 位置到要旋转的方块的位置的向量，与旋转的轴是垂直的，通过这一特性可以筛选出所有要旋转的方块
             const rotateSquares: SquareMesh[] = [];
             const controlTemPos = getTemPos(controlSquare, this.data.elementSize);
@@ -159,9 +155,9 @@ export class Cube extends Group {
         const rotateAxisLocal = this.state.rotateAxisLocal; // 旋转的轴
 
         // 旋转的角度：使用 screenDir 在旋转方向上的投影长度，投影长度越长，旋转角度越大
-        const temAngle = Math.abs(getAngleBetweenTwoVector2(this.state.rotateDirection!.screenDir, screenDir));
+        const temAngle = getAngleBetweenTwoVector2(this.state.rotateDirection!.screenDir, screenDir);
         const screenDirProjectRotateDirLen = Math.cos(temAngle) * screenDir.length();
-        const rotateAnglePI = screenDirProjectRotateDirLen / 1000 * Math.PI; // 旋转角度
+        const rotateAnglePI = screenDirProjectRotateDirLen / 2000 * Math.PI; // 旋转角度
 
         const rotateMat = new Matrix4();
         rotateMat.makeRotationAxis(rotateAxisLocal!, rotateAnglePI);

@@ -25,6 +25,7 @@ class CubeState {
     }
 
     public setRotating(control: SquareMesh, actives: SquareMesh[], direction: RotateDirection, rotateAxisLocal: Vector3) {
+        this.inRotation = true;
         this.controlSquare = control;
         this.activeSquares = actives;
         this.rotateDirection = direction;
