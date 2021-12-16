@@ -14,7 +14,7 @@ class CubeData {
     /**
      * 魔方阶级
      */
-    private cubeOrder: number;
+    public cubeOrder: number;
     /**
      * 魔方颜色：top、bottom、left、right、front、back
      */

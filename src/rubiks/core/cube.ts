@@ -25,6 +25,20 @@ export class Cube extends Group {
         return this.children as SquareMesh[];
     }
 
+    /**
+     * 魔方阶数
+     */
+    public get order() {
+        return this.data.cubeOrder;
+    }
+
+    /**
+     * 方块大小
+     */
+    public get squareSize() {
+        return this.data.elementSize;
+    }
+
     public constructor(order = 3) {
         super();
 
@@ -155,17 +169,40 @@ export class Cube extends Group {
         const rotateAxisLocal = this.state.rotateAxisLocal; // 旋转的轴
 
         // 旋转的角度：使用 screenDir 在旋转方向上的投影长度，投影长度越长，旋转角度越大
+        // 投影长度的正负值影响魔方旋转的角度方向
+        // 旋转的角度 = 投影的长度 / 魔方的尺寸 * 90度
         const temAngle = getAngleBetweenTwoVector2(this.state.rotateDirection!.screenDir, screenDir);
         const screenDirProjectRotateDirLen = Math.cos(temAngle) * screenDir.length();
-        const rotateAnglePI = screenDirProjectRotateDirLen / 2000 * Math.PI; // 旋转角度
+        const coarseCubeSize = this.getCoarseCubeSize(camera, winSize);
+        const rotateAnglePI = screenDirProjectRotateDirLen / coarseCubeSize * Math.PI * 0.5; // 旋转角度
+        const newRotateAnglePI = rotateAnglePI - this.state.rotateAnglePI;
+        this.state.rotateAnglePI = rotateAnglePI;
 
         const rotateMat = new Matrix4();
-        rotateMat.makeRotationAxis(rotateAxisLocal!, rotateAnglePI);
+        rotateMat.makeRotationAxis(rotateAxisLocal!, newRotateAnglePI);
 
         for (let i = 0; i < rotateSquares.length; i++) {
             rotateSquares[i].applyMatrix4(rotateMat);
             rotateSquares[i].updateMatrix();
         }
+    }
+
+    /**
+     * 获取一个粗糙的魔方屏幕尺寸
+     */
+    private getCoarseCubeSize(camera: Camera, winSize: {w: number; h: number}) {
+        const width = this.order  * this.squareSize;
+        const p1 = new Vector3(-width / 2, 0, 0);
+        const p2 = new Vector3(width / 2, 0, 0);
+
+        p1.project(camera);
+        p2.project(camera);
+
+        const {w, h} = winSize;
+        const screenP1 = ndcToScreen(p1, w, h);
+        const screenP2 = ndcToScreen(p2, w, h);
+
+        return Math.abs(screenP2.x - screenP1.x);
     }
 
     /**

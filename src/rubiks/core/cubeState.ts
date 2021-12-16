@@ -12,6 +12,10 @@ class CubeState {
     private _squares: SquareMesh[];
     /** 是否正处于旋转状态 */
     public inRotation = false;
+    /**
+     * 已经旋转的角度（弧度）
+     */
+    public rotateAnglePI = 0;
     /** 正在旋转的方块 */
     public activeSquares: SquareMesh[] = [];
     /** 控制的方块 */
