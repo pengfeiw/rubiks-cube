@@ -138,8 +138,6 @@ class Control {
         
         intersectSquares.sort((item1, item2) => item1.distance - item2.distance);
 
-        console.log("intersectSquares", intersectSquares);
-
         if (intersectSquares.length > 0) {
             return intersectSquares[0];
         }

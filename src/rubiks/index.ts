@@ -45,7 +45,16 @@ class Rubiks {
 
         const cube = new Cube(order);
         this.scene.add(cube);
+        this.render();
+
+        const winW = this.renderer.domElement.width;
+        const winH = this.renderer.domElement.height;
+        const coarseSize = cube.getCoarseCubeSize(this.camera, {w: winW, h: winH});
+
+        const ratio = Math.max(2.2 / (winW / coarseSize), 2.2 / (winH / coarseSize));
+        this.camera.position.z *= ratio;
         this._control = new Control(this.camera, this.scene, this.renderer, cube);
+
         this.render();
     }
 

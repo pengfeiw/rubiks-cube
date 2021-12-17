@@ -273,7 +273,7 @@ export class Cube extends Group {
     /**
      * 获取一个粗糙的魔方屏幕尺寸
      */
-    private getCoarseCubeSize(camera: Camera, winSize: {w: number; h: number}) {
+    public getCoarseCubeSize(camera: Camera, winSize: {w: number; h: number}) {
         const width = this.order * this.squareSize;
         const p1 = new Vector3(-width / 2, 0, 0);
         const p2 = new Vector3(width / 2, 0, 0);
