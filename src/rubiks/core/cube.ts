@@ -62,6 +62,10 @@ export class Cube extends Group {
      * @param winSize 窗口大小
      */
     public rotateOnePlane(mousePrePos: Vector2, mouseCurPos: Vector2, controlSquare: SquareMesh, camera: Camera, winSize: {w: number; h: number}) {
+        if (mouseCurPos.distanceTo(mousePrePos) < 5) {
+            return;
+        }
+
         if (!this.squares.includes(controlSquare)) {
             return;
         }
