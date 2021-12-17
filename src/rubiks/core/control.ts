@@ -2,6 +2,7 @@ import {Camera, Matrix4, PerspectiveCamera, Raycaster, Scene, Vector2, Vector3, 
 import {Cube} from "./cube";
 import {rotateAroundWorldAxis, ndcToScreen} from "../util/transform";
 import {SquareMesh} from "./square";
+import {setFinish} from "./statusbar";
 
 let spanEle: HTMLSpanElement;
 
@@ -29,6 +30,8 @@ const testSquareScreenPosition = (cube: Cube, square: SquareMesh, camera: Camera
     spanEle.innerText = `1`;
 };
 
+
+
 class Control {
     private renderer: WebGLRenderer;
     private scene: Scene;
@@ -47,13 +50,22 @@ class Control {
         this.scene = scene;
         this.camera = camera;
 
+        this.mouseDownHandle = this.mouseDownHandle.bind(this);
+        this.mouseUpHandle = this.mouseUpHandle.bind(this);
+        this.mouseMoveHandle = this.mouseMoveHandle.bind(this);
         this.init();
     }
 
     private init() {
-        this.domElement.addEventListener("mousedown", this.mouseDownHandle.bind(this));
-        this.domElement.addEventListener("mouseup", this.mouseUpHandle.bind(this));
-        this.domElement.addEventListener("mousemove", this.mouseMoveHandle.bind(this));
+        this.domElement.addEventListener("mousedown", this.mouseDownHandle);
+        this.domElement.addEventListener("mouseup", this.mouseUpHandle);
+        this.domElement.addEventListener("mousemove", this.mouseMoveHandle);
+    }
+
+    public dispose() {
+        this.domElement.removeEventListener("mousedown", this.mouseDownHandle);
+        this.domElement.removeEventListener("mouseup", this.mouseUpHandle);
+        this.domElement.removeEventListener("mousemove", this.mouseMoveHandle);
     }
 
     public mouseDownHandle(event: MouseEvent) {
@@ -75,6 +87,8 @@ class Control {
         if (this._square) {
             this.cube.afterRotate();
             this.renderer.render(this.scene, this.camera);
+
+            setFinish(this.cube.finish);
         }
 
         this.mouseDown = false;
@@ -122,7 +136,9 @@ class Control {
             }
         }
         
-        intersectSquares.sort((item) => item.distance);
+        intersectSquares.sort((item1, item2) => item1.distance - item2.distance);
+
+        console.log("intersectSquares", intersectSquares);
 
         if (intersectSquares.length > 0) {
             return intersectSquares[0];

@@ -1,10 +1,7 @@
-import {PerspectiveCamera, Color, Renderer, Scene, WebGLRenderer} from "three";
+import {PerspectiveCamera, Scene, WebGLRenderer} from "three";
 import createCamera from "./components/camera";
 import createScene from "./components/scene";
 import createRenderer from "./components/renderer";
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import {createControls} from "./systems/controls";
-import Loop from "./systems/loop";
 import {Cube} from "./core/cube";
 import Control from "./core/control";
 
@@ -24,24 +21,32 @@ class Rubiks {
     private camera: PerspectiveCamera;
     private scene: Scene;
     private renderer: WebGLRenderer;
+    private _control: Control | undefined;
     public constructor(container: Element) {
         this.camera = createCamera();
         this.scene = createScene("black");
         this.renderer = createRenderer();
         container.appendChild(this.renderer.domElement);
         
-        const cube = new Cube(3);
-        this.scene.add(cube);
-
         // auto resize
         window.addEventListener("resize", () => {
             setSize(container, this.camera, this.renderer);
             this.render();
         });
         setSize(container, this.camera, this.renderer);
-        this.render();
+        this.setOrder(3);
+    }
 
-        new Control(this.camera, this.scene, this.renderer, cube);
+    public setOrder(order: number) {
+        this.scene.remove(...this.scene.children);
+        if (this._control) {
+            this._control.dispose();
+        }
+
+        const cube = new Cube(order);
+        this.scene.add(cube);
+        this._control = new Control(this.camera, this.scene, this.renderer, cube);
+        this.render();
     }
 
     private render() {

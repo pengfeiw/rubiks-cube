@@ -1,4 +1,4 @@
-import {Shape, ShapeGeometry, MeshBasicMaterial, Mesh, Color, Object3D, Group, Plane, PlaneGeometry} from "three";
+import {Shape, ShapeGeometry, MeshBasicMaterial, Mesh, Color, Object3D, Group, Plane, PlaneGeometry, DoubleSide} from "three";
 import {CubeElement} from "./cubeData";
 
 export const createSquare = (color: Color, element: CubeElement) => {
@@ -31,7 +31,8 @@ export const createSquare = (color: Color, element: CubeElement) => {
 
     const geo2 = new PlaneGeometry(1, 1, 1);
     const mat2 = new MeshBasicMaterial({
-        color: "black"
+        color: "black",
+        side: DoubleSide
     });
     
     const plane = new Mesh(geo2, mat2);

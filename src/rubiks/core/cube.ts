@@ -1,4 +1,5 @@
-import {Camera, Color, Euler, Group, MathUtils, Matrix4, Vector, Vector2, Vector3} from "three";
+import {Camera, Color, Group, Matrix4, Vector2, Vector3} from "three";
+import {setFinish} from "./statusbar";
 import {getAngleBetweenTwoVector2, equalDirection} from "../util/math";
 import {ndcToScreen} from "../util/transform";
 import CubeData from "./cubeData";
@@ -7,9 +8,6 @@ import {createSquare, SquareMesh} from "./square";
 
 /**
  * 获取square向里平移0.5的方块大小的位置
- * @param square 
- * @param squareSize 
- * @returns 
  */
 const getTemPos = (square: SquareMesh, squareSize: number) => {
     const moveVect = square.element.normal.clone().normalize().multiplyScalar(-0.5 * squareSize);
@@ -39,6 +37,13 @@ export class Cube extends Group {
         return this.data.elementSize;
     }
 
+    /**
+     * 是否处于完成状态
+     */
+    public get finish() {
+        return this.state.validateFinish();
+    }
+
     public constructor(order = 3) {
         super();
 
@@ -51,6 +56,8 @@ export class Cube extends Group {
         }
 
         this.state = new CubeState(this.squares);
+
+        setFinish(this.finish);
     }
 
     /**
