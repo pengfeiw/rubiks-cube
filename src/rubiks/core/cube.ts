@@ -222,12 +222,10 @@ export class Cube extends Group {
 
         if (Math.abs(angleRelative360PI) > 0.1) {
 
-            // 更新位置和法向量或者只更新颜色
-            // 因为更新位置和法向量后，数值存在误差，所以选择更新颜色
+            // 更新位置和法向量
             const rotateMat2 = new Matrix4();
             rotateMat2.makeRotationAxis(this.state.rotateAxisLocal!, angleRelative360PI);
 
-            // const colors = this.state.activeSquares.map((square) => square.element.color);
             const pn: {
                 nor: Vector3;
                 pos: Vector3;
@@ -236,7 +234,6 @@ export class Cube extends Group {
             for (let i = 0; i < this.state.activeSquares.length; i++) {
                 const nor = this.state.activeSquares[i].element.normal.clone();
                 const pos = this.state.activeSquares[i].element.pos.clone();
-                // const color = colors[i];
 
                 nor.applyMatrix4(rotateMat2); // 旋转后的法向量
                 pos.applyMatrix4(rotateMat2); // 旋转后的位置
@@ -246,7 +243,6 @@ export class Cube extends Group {
                     const nor2 = this.state.activeSquares[j].element.normal.clone();
                     const pos2 = this.state.activeSquares[j].element.pos.clone();
                     if (equalDirection(nor, nor2) && pos.distanceTo(pos2) < 0.1) {
-                        // this.state.activeSquares[j].element.color = color;
                         pn.push({
                             nor: nor2,
                             pos: pos2

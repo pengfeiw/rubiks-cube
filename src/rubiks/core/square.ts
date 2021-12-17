@@ -1,4 +1,4 @@
-import {Shape, ShapeGeometry, MeshBasicMaterial, Mesh, Color} from "three";
+import {Shape, ShapeGeometry, MeshBasicMaterial, Mesh, Color, Object3D, Group, Plane, PlaneGeometry} from "three";
 import {CubeElement} from "./cubeData";
 
 export const createSquare = (color: Color, element: CubeElement) => {
@@ -23,28 +23,34 @@ export const createSquare = (color: Color, element: CubeElement) => {
 
     const geometry = new ShapeGeometry(squareShape);
     const material = new MeshBasicMaterial({color});
-    const mesh = new SquareMesh(element, geometry, material);
-    
+    const mesh = new Mesh(geometry, material);
     mesh.scale.set(0.9, 0.9, 0.9);
+
+    const square = new SquareMesh(element);
+    square.add(mesh);
+
+    const geo2 = new PlaneGeometry(1, 1, 1);
+    const mat2 = new MeshBasicMaterial({
+        color: "black"
+    });
+    
+    const plane = new Mesh(geo2, mat2);
+    plane.position.set(0, 0, -0.01); // 移动靠后一点，防止重叠造成闪烁
+    square.add(plane);
+
     const posX = element.pos.x;
     const posY = element.pos.y;
     const posZ = element.pos.z;
-    mesh.position.set(posX, posY, posZ);
+    square.position.set(posX, posY, posZ);
 
-    mesh.lookAt(element.pos.clone().add(element.normal));
-    return mesh;
+    square.lookAt(element.pos.clone().add(element.normal));
+    return square;
 };
 
-export class SquareMesh extends Mesh<ShapeGeometry, MeshBasicMaterial> {
+export class SquareMesh extends Object3D {
     public element: CubeElement;
-    public constructor(element: CubeElement, geometry: ShapeGeometry, material: MeshBasicMaterial) {
-        super(geometry, material);
+    public constructor(element: CubeElement) {
+        super();
         this.element = element;
-    }
-    public clone(recursive?: boolean) {
-        const cloned = super.clone(recursive);
-        cloned.material = this.material.clone();
-        cloned.geometry = this.geometry.clone();
-        return cloned;
     }
 }

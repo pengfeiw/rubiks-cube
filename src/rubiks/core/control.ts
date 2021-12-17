@@ -64,7 +64,7 @@ class Control {
 
         this._square = null;
         if (intersect) {
-            this._square = intersect.object as SquareMesh;
+            this._square = intersect.square;
             this.mouseDownPos = new Vector2(event.offsetX, event.offsetY);
 
             // testSquareScreenPosition(this.cube, this._square, this.camera);
@@ -106,10 +106,26 @@ class Control {
 
         this.raycaster.setFromCamera({x, y}, this.camera);
 
-        const intersects = this.raycaster.intersectObjects(this.cube.squares);
+        // const intersects = this.raycaster.intersectObjects(this.cube.squares);
 
-        if (intersects.length > 0) {
-            return intersects[0];
+        let intersectSquares: {
+            distance: number;
+            square: SquareMesh; 
+        }[] = [];
+        for (let i = 0; i < this.cube.squares.length; i++) {
+            const intersects = this.raycaster.intersectObjects([this.cube.squares[i]]);
+            if (intersects.length > 0) {
+                intersectSquares.push({
+                    distance: intersects[0].distance,
+                    square: this.cube.squares[i]
+                });
+            }
+        }
+        
+        intersectSquares.sort((item) => item.distance);
+
+        if (intersectSquares.length > 0) {
+            return intersectSquares[0];
         }
 
         return null;
