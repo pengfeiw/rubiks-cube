@@ -4,7 +4,7 @@ import Rubiks from "./rubiks/index";
 window.onload = () => {
     const container = document.getElementById("container");
     const orderChangeEle = document.getElementById("order-select") as HTMLSelectElement;
-    
+    const disorderEle = document.getElementById("disorder") as HTMLButtonElement;
     
     if (container) {
         const rubiks = new Rubiks(container);
@@ -14,5 +14,10 @@ window.onload = () => {
 
             rubiks.setOrder(parseInt(value));
         })
+
+        disorderEle.addEventListener("click", () => {
+            rubiks.disorder();
+        });
+
     }
 };

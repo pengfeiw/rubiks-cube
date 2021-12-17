@@ -20,6 +20,7 @@ const setSize = (container: Element, camera: PerspectiveCamera, renderer: WebGLR
 class Rubiks {
     private camera: PerspectiveCamera;
     private scene: Scene;
+    private cube: Cube | undefined;
     private renderer: WebGLRenderer;
     private _control: Control | undefined;
     public constructor(container: Element) {
@@ -45,6 +46,7 @@ class Rubiks {
 
         const cube = new Cube(order);
         this.scene.add(cube);
+        this.cube = cube;
         this.render();
 
         const winW = this.renderer.domElement.width;
@@ -56,6 +58,15 @@ class Rubiks {
         this._control = new Control(this.camera, this.scene, this.renderer, cube);
 
         this.render();
+    }
+
+    /**
+     * 打乱
+     */
+    public disorder() {
+        if (this.cube) {
+            
+        }
     }
 
     private render() {

@@ -304,4 +304,11 @@ export class Cube extends Group {
         const {w, h} = winSize;
         return ndcToScreen(pos, w, h);
     }
+
+    /**
+     * 打乱
+     */
+    public disorder() {
+        
+    }
 };

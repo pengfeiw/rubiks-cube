@@ -27,6 +27,10 @@
         #order-select {
             outline: none;
         }
+        #disorder {
+            width: 70px;
+            display: none;
+        }
     </style>
 </head>
 
@@ -34,11 +38,11 @@
     <div id="container"></div>
     <div id="status">
         <div class="status-item">
-            <label for="finish">FINISH: </label>
+            <label for="finish">状态: </label>
             <span id="finish"></span>
         </div>
         <div class="status-item">
-            <label for="order-select">ORDER: </label>
+            <label for="order-select">阶数: </label>
             <select id="order-select">
                 <option value="2">2</option>
                 <option value="3" selected>3</option>
@@ -50,6 +54,10 @@
                 <option value="9">9</option>
                 <option value="10">10</option>
             </select>
+        </div>
+        <!-- comming soon -->
+        <div class="status-item">
+            <button id="disorder">打乱</button>
         </div>
     </div>
     <script type="module" src="./out-tsc/src/index.js"></script>
