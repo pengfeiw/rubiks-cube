@@ -35,6 +35,15 @@ class CubeState {
         this.rotateDirection = direction;
         this.rotateAxisLocal = rotateAxisLocal;
     }
+
+    public resetState() {
+        this.inRotation = false;
+        this.activeSquares = [];
+        this.controlSquare = undefined;
+        this.rotateDirection = undefined;
+        this.rotateAxisLocal = undefined;
+        this.rotateAnglePI = 0;
+    }
 }
 
 export default CubeState;

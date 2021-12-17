@@ -72,6 +72,11 @@ class Control {
     }
 
     public mouseUpHandle() {
+        if (this._square) {
+            this.cube.afterRotate();
+            this.renderer.render(this.scene, this.camera);
+        }
+
         this.mouseDown = false;
         this._square = null;
     }

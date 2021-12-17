@@ -1,5 +1,5 @@
 import {Camera, Color, Euler, Group, MathUtils, Matrix4, Vector, Vector2, Vector3} from "three";
-import {getAngleBetweenTwoVector2} from "../util/math";
+import {getAngleBetweenTwoVector2, equalDirection} from "../util/math";
 import {ndcToScreen} from "../util/transform";
 import CubeData from "./cubeData";
 import CubeState, {RotateDirection} from "./cubeState";
@@ -53,12 +53,21 @@ export class Cube extends Group {
         this.state = new CubeState(this.squares);
     }
 
+    /**
+     * 旋转一个面
+     * @param mousePrePos 旋转前的鼠标的屏幕坐标 
+     * @param mouseCurPos 此时的鼠标屏幕坐标
+     * @param controlSquare 控制的方块
+     * @param camera 相机
+     * @param winSize 窗口大小
+     */
     public rotateOnePlane(mousePrePos: Vector2, mouseCurPos: Vector2, controlSquare: SquareMesh, camera: Camera, winSize: {w: number; h: number}) {
         if (!this.squares.includes(controlSquare)) {
             return;
         }
 
         const screenDir = mouseCurPos.clone().sub(mousePrePos);
+        if (screenDir.x === 0 && screenDir.y === 0) return;
         if (!this.state.inRotation) {
             const squareScreenPos = this.getSquareScreenPos(controlSquare, camera, winSize) as Vector2;
 
@@ -188,10 +197,77 @@ export class Cube extends Group {
     }
 
     /**
+     * 旋转后需要更新 cube 的状态
+     */
+    public afterRotate() {
+        // 旋转至正位，有时旋转的不是90度的倍数，需要修正到90度的倍数
+        const rightAnglePI = Math.PI * 0.5;
+        const exceedAnglePI = Math.abs(this.state.rotateAnglePI) % rightAnglePI;
+        let needRotateAnglePI = exceedAnglePI > rightAnglePI * 0.5 ? rightAnglePI - exceedAnglePI : -exceedAnglePI;
+        needRotateAnglePI = this.state.rotateAnglePI > 0 ? needRotateAnglePI : -needRotateAnglePI;
+
+        const rotateMat = new Matrix4();
+        rotateMat.makeRotationAxis(this.state.rotateAxisLocal!, needRotateAnglePI);
+
+        for (let i = 0; i < this.state.activeSquares.length; i++) {
+            this.state.activeSquares[i].applyMatrix4(rotateMat);
+            this.state.activeSquares[i].updateMatrix();
+        }
+
+        this.state.rotateAnglePI += needRotateAnglePI;
+
+        // 更新 data：CubeElement 的状态，旋转后法向量、位置等发生了变化
+        const angleRelative360PI = this.state.rotateAnglePI % (Math.PI * 2);
+        // const timesOfRight = angleRelative360PI / rightAnglePI; // 旋转的角度相当于几个90度
+
+        if (Math.abs(angleRelative360PI) > 0.1) {
+
+            // 更新位置和法向量或者只更新颜色
+            // 因为更新位置和法向量后，数值存在误差，所以选择更新颜色
+            const rotateMat2 = new Matrix4();
+            rotateMat2.makeRotationAxis(this.state.rotateAxisLocal!, angleRelative360PI);
+
+            // const colors = this.state.activeSquares.map((square) => square.element.color);
+            const pn: {
+                nor: Vector3;
+                pos: Vector3;
+            }[] = [];
+
+            for (let i = 0; i < this.state.activeSquares.length; i++) {
+                const nor = this.state.activeSquares[i].element.normal.clone();
+                const pos = this.state.activeSquares[i].element.pos.clone();
+                // const color = colors[i];
+
+                nor.applyMatrix4(rotateMat2); // 旋转后的法向量
+                pos.applyMatrix4(rotateMat2); // 旋转后的位置
+
+                // 找到与旋转后对应的方块，更新它的颜色
+                for (let j = 0; j < this.state.activeSquares.length; j++) {
+                    const nor2 = this.state.activeSquares[j].element.normal.clone();
+                    const pos2 = this.state.activeSquares[j].element.pos.clone();
+                    if (equalDirection(nor, nor2) && pos.distanceTo(pos2) < 0.1) {
+                        // this.state.activeSquares[j].element.color = color;
+                        pn.push({
+                            nor: nor2,
+                            pos: pos2
+                        });
+                    }
+                }
+            }
+
+            for (let i = 0; i < this.state.activeSquares.length; i++) {
+                this.state.activeSquares[i].element.normal = pn[i].nor;
+                this.state.activeSquares[i].element.pos = pn[i].pos;
+            }
+        }
+
+        this.state.resetState();
+    }
+    /**
      * 获取一个粗糙的魔方屏幕尺寸
      */
     private getCoarseCubeSize(camera: Camera, winSize: {w: number; h: number}) {
-        const width = this.order  * this.squareSize;
+        const width = this.order * this.squareSize;
         const p1 = new Vector3(-width / 2, 0, 0);
         const p2 = new Vector3(width / 2, 0, 0);
 
