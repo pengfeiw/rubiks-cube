@@ -98,13 +98,23 @@ abstract class Control {
                 const curMousePos = new Vector2(offsetX, offsetY);
                 this.cube.rotateOnePlane(this.startPos, curMousePos, this._square, this.camera, {w: this.domElement.clientWidth, h: this.domElement.clientHeight});
             } else {
-                const dx = movementX / 100;
-                const dy = -movementY / 100;
+                const dx = movementX;
+                const dy = -movementY;
+
+                const movementLen = Math.sqrt(dx * dx + dy * dy);
+                const cubeSize = this.cube.getCoarseCubeSize(
+                    this.camera, {
+                    w: this.domElement.clientWidth,
+                    h: this.domElement.clientHeight
+                });
+
+
+                const rotateAngle = Math.PI * movementLen / cubeSize;
 
                 const moveVect = new Vector2(dx, dy);
                 const rotateDir = moveVect.rotateAround(new Vector2(0, 0), Math.PI * 0.5);
 
-                rotateAroundWorldAxis(this.cube, new Vector3(rotateDir.x, rotateDir.y, 0), Math.sqrt(dx * dx + dy * dy));
+                rotateAroundWorldAxis(this.cube, new Vector3(rotateDir.x, rotateDir.y, 0),rotateAngle);
             }
             this.renderer.render(this.scene, this.camera);
         }
@@ -194,6 +204,7 @@ export class TouchControl extends Control {
         if (touches.length === 1 && this.lastPos) {
             const touch = touches[0];
             this.operateDrag(touch.pageX, touch.pageY, touch.pageX - this.lastPos.x, touch.pageY - this.lastPos.y);
+            this.lastPos = new Vector2(touch.pageX, touch.pageY);
         }
     }
 
