@@ -99,7 +99,7 @@ class Control {
         if (this.mouseDown) {
             if (this._square) {
                 const curMousePos = new Vector2(event.offsetX, event.offsetY);
-                this.cube.rotateOnePlane(this.mouseDownPos, curMousePos, this._square, this.camera, {w: this.domElement.width, h: this.domElement.height});
+                this.cube.rotateOnePlane(this.mouseDownPos, curMousePos, this._square, this.camera, {w: this.domElement.clientWidth, h: this.domElement.clientHeight});
             } else {
                 const dx = event.movementX / 100;
                 const dy = -event.movementY / 100;
@@ -115,8 +115,8 @@ class Control {
     }
 
     private getIntersects(event: MouseEvent) {
-        const x = (event.offsetX / this.domElement.width) * 2 - 1;
-        const y = -(event.offsetY / this.domElement.height) * 2 + 1;
+        const x = (event.offsetX / this.domElement.clientWidth) * 2 - 1;
+        const y = -(event.offsetY / this.domElement.clientHeight) * 2 + 1;
 
         this.raycaster.setFromCamera({x, y}, this.camera);
 
