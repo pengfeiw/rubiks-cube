@@ -18,6 +18,5 @@ window.onload = () => {
         disorderEle.addEventListener("click", () => {
             rubiks.disorder();
         });
-
     }
 };

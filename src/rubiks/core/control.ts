@@ -30,17 +30,15 @@ const testSquareScreenPosition = (cube: Cube, square: SquareMesh, camera: Camera
     spanEle.innerText = `1`;
 };
 
-
-
-class Control {
-    private renderer: WebGLRenderer;
-    private scene: Scene;
-    private cube: Cube;
-    private camera: PerspectiveCamera;
-    private mouseDown = false;
-    private mouseDownPos: Vector2 = new Vector2();
-    private _square: SquareMesh | null = null;
-    private get domElement() {
+abstract class Control {
+    protected renderer: WebGLRenderer;
+    protected scene: Scene;
+    protected cube: Cube;
+    protected camera: PerspectiveCamera;
+    protected _square: SquareMesh | null = null;
+    private start = false;
+    private startPos: Vector2 = new Vector2();
+    protected get domElement() {
         return this.renderer.domElement;
     }
     private raycaster = new Raycaster();
@@ -49,82 +47,17 @@ class Control {
         this.renderer = renderer;
         this.scene = scene;
         this.camera = camera;
-
-        this.mouseDownHandle = this.mouseDownHandle.bind(this);
-        this.mouseUpHandle = this.mouseUpHandle.bind(this);
-        this.mouseMoveHandle = this.mouseMoveHandle.bind(this);
-        this.init();
     }
 
-    private init() {
-        this.domElement.addEventListener("mousedown", this.mouseDownHandle);
-        this.domElement.addEventListener("mouseup", this.mouseUpHandle);
-        this.domElement.addEventListener("mousemove", this.mouseMoveHandle);
-    }
-
-    public dispose() {
-        this.domElement.removeEventListener("mousedown", this.mouseDownHandle);
-        this.domElement.removeEventListener("mouseup", this.mouseUpHandle);
-        this.domElement.removeEventListener("mousemove", this.mouseMoveHandle);
-    }
-
-    public mouseDownHandle(event: MouseEvent) {
-        this.mouseDown = true;
-
-        this.mouseDownPos = new Vector2()
-        const intersect = this.getIntersects(event);
-
-        this._square = null;
-        if (intersect) {
-            this._square = intersect.square;
-            this.mouseDownPos = new Vector2(event.offsetX, event.offsetY);
-
-            // testSquareScreenPosition(this.cube, this._square, this.camera);
-        }
-    }
-
-    public mouseUpHandle() {
-        if (this._square) {
-            this.cube.afterRotate();
-            this.renderer.render(this.scene, this.camera);
-
-            setFinish(this.cube.finish);
-        }
-
-        this.mouseDown = false;
-        this._square = null;
-    }
-
-    public mouseMoveHandle(event: MouseEvent) {
-        if (this.mouseDown) {
-            if (this._square) {
-                const curMousePos = new Vector2(event.offsetX, event.offsetY);
-                this.cube.rotateOnePlane(this.mouseDownPos, curMousePos, this._square, this.camera, {w: this.domElement.clientWidth, h: this.domElement.clientHeight});
-            } else {
-                const dx = event.movementX / 100;
-                const dy = -event.movementY / 100;
-
-                const moveVect = new Vector2(dx, dy);
-                const rotateDir = moveVect.rotateAround(new Vector2(0, 0), Math.PI * 0.5);
-
-                rotateAroundWorldAxis(this.cube, new Vector3(rotateDir.x, rotateDir.y, 0), Math.sqrt(dx * dx + dy * dy));
-            }
-
-            this.renderer.render(this.scene, this.camera);
-        }
-    }
-
-    private getIntersects(event: MouseEvent) {
-        const x = (event.offsetX / this.domElement.clientWidth) * 2 - 1;
-        const y = -(event.offsetY / this.domElement.clientHeight) * 2 + 1;
+    protected getIntersects(offsetX: number, offsetY: number) {
+        const x = (offsetX / this.domElement.clientWidth) * 2 - 1;
+        const y = -(offsetY / this.domElement.clientHeight) * 2 + 1;
 
         this.raycaster.setFromCamera({x, y}, this.camera);
 
-        // const intersects = this.raycaster.intersectObjects(this.cube.squares);
-
         let intersectSquares: {
             distance: number;
-            square: SquareMesh; 
+            square: SquareMesh;
         }[] = [];
         for (let i = 0; i < this.cube.squares.length; i++) {
             const intersects = this.raycaster.intersectObjects([this.cube.squares[i]]);
@@ -135,7 +68,7 @@ class Control {
                 });
             }
         }
-        
+
         intersectSquares.sort((item1, item2) => item1.distance - item2.distance);
 
         if (intersectSquares.length > 0) {
@@ -144,6 +77,89 @@ class Control {
 
         return null;
     }
+    public abstract dispose(): void;
+    protected operateStart(offsetX: number, offsetY: number) {
+        this.start = true;
+        this.startPos = new Vector2()
+        const intersect = this.getIntersects(offsetX, offsetY);
+
+        this._square = null;
+        if (intersect) {
+            this._square = intersect.square;
+            this.startPos = new Vector2(offsetX, offsetY);
+
+            // testSquareScreenPosition(this.cube, this._square, this.camera);
+        }
+    }
+
+    protected operateDrag(offsetX: number, offsetY: number, movementX: number, movementY: number) {
+        if (this.start) {
+            if (this._square) {
+                const curMousePos = new Vector2(offsetX, offsetY);
+                this.cube.rotateOnePlane(this.startPos, curMousePos, this._square, this.camera, {w: this.domElement.clientWidth, h: this.domElement.clientHeight});
+            } else {
+                const dx = movementX / 100;
+                const dy = -movementY / 100;
+
+                const moveVect = new Vector2(dx, dy);
+                const rotateDir = moveVect.rotateAround(new Vector2(0, 0), Math.PI * 0.5);
+
+                rotateAroundWorldAxis(this.cube, new Vector3(rotateDir.x, rotateDir.y, 0), Math.sqrt(dx * dx + dy * dy));
+            }
+            this.renderer.render(this.scene, this.camera);
+        }
+    }
+
+    protected operateEnd() {
+        if (this._square) {
+            this.cube.afterRotate();
+            this.renderer.render(this.scene, this.camera);
+
+            setFinish(this.cube.finish);
+        }
+
+        this.start = false;
+        this._square = null;
+    }
+}
+
+export class MouseControl extends Control {
+    constructor(camera: PerspectiveCamera, scene: Scene, renderer: WebGLRenderer, cube: Cube) {
+        super(camera, scene, renderer, cube);
+
+        this.mousedownHandle = this.mousedownHandle.bind(this);
+        this.mouseupHandle = this.mouseupHandle.bind(this);
+        this.mousemoveHandle = this.mousemoveHandle.bind(this);
+
+        this.init();
+    }
+
+    public mousedownHandle(event: MouseEvent) {
+        this.operateStart(event.offsetX, event.offsetY);
+    }
+
+    public mouseupHandle() {
+        this.operateEnd();
+    }
+
+    public mousemoveHandle(event: MouseEvent) {
+        this.operateDrag(event.offsetX, event.offsetY, event.movementX, event.movementY);
+    }
+
+    public init(): void {
+        this.domElement.addEventListener("mousedown", this.mousedownHandle);
+        this.domElement.addEventListener("mouseup", this.mouseupHandle);
+        this.domElement.addEventListener("mousemove", this.mousemoveHandle);
+    }
+    public dispose(): void {
+        this.domElement.removeEventListener("mousedown", this.mousedownHandle);
+        this.domElement.removeEventListener("mouseup", this.mouseupHandle);
+        this.domElement.removeEventListener("mousemove", this.mousemoveHandle);
+    }
+}
+
+class TouchControl {
+
 }
 
 export default Control;
