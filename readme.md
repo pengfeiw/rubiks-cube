@@ -4,7 +4,7 @@ ThreeJs 制作的魔方游戏，支持自定义魔方阶级（目前界面上只
 
 ## Demo
 
-试玩地址：[Rubiks Cube - 魔方](https://pengfeiw.github.io/minicdoe/threejs-rubiks)
+试玩地址：[Rubiks Cube - 魔方](https://pengfeiw.github.io/minicode/threejs-rubik)
 
 ## 运行项目
 
