@@ -1,16 +1,16 @@
 {
-    "name": "typescript-rollup",
+    "name": "rubik-cube",
     "version": "1.0.0",
-    "description": "",
+    "description": "使用 ThreeJs 制作的魔方游戏，支持切换魔方阶数。",
     "main": "index.js",
     "scripts": {
         "tsc:watch": "tsc --watch",
         "start": "concurrently --kill-others --names tsc,web-dev-server \"npm run tsc:watch\" \"web-dev-server --config web-dev-server.config.js\"",
         "build": "rimraf dist && tsc && rollup -c rollup.config.js"
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
+    "keywords": ["rubik-cube", "rubik", "threejs", "webgl", "game"],
+    "author": "Wang Pengfei <pengfeixc@sina.com> (https://pengfeixc.com)",
+    "license": "MIT",
     "devDependencies": {
         "@open-wc/building-rollup": "^2.0.1",
         "@types/three": "^0.134.0",
