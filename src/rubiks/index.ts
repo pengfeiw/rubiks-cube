@@ -3,7 +3,7 @@ import createCamera from "./components/camera";
 import createScene from "./components/scene";
 import createRenderer from "./components/renderer";
 import {Cube} from "./core/cube";
-import Control, {MouseControl} from "./core/control";
+import Control, {MouseControl, TouchControl} from "./core/control";
 
 const setSize = (container: Element, camera: PerspectiveCamera, renderer: WebGLRenderer) => {
     // Set the camera's aspect ratio
@@ -22,7 +22,7 @@ class Rubiks {
     private scene: Scene;
     private cube: Cube | undefined;
     private renderer: WebGLRenderer;
-    private _control: Control | undefined;
+    private _controls: Control[] = [];
     public constructor(container: Element) {
         this.camera = createCamera();
         this.scene = createScene("black");
@@ -40,8 +40,8 @@ class Rubiks {
 
     public setOrder(order: number) {
         this.scene.remove(...this.scene.children);
-        if (this._control) {
-            this._control.dispose();
+        if (this._controls.length > 0) {
+            this._controls.forEach((control) => control.dispose());
         }
 
         const cube = new Cube(order);
@@ -55,7 +55,10 @@ class Rubiks {
 
         const ratio = Math.max(2.2 / (winW / coarseSize), 2.2 / (winH / coarseSize));
         this.camera.position.z *= ratio;
-        this._control = new MouseControl(this.camera, this.scene, this.renderer, cube);
+        this._controls.push(
+            new MouseControl(this.camera, this.scene, this.renderer, cube),
+            new TouchControl(this.camera, this.scene, this.renderer, cube)
+        );
 
         this.render();
     }
