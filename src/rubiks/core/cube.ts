@@ -57,6 +57,9 @@ export class Cube extends Group {
 
         this.state = new CubeState(this.squares);
 
+        this.rotateX(Math.PI * 0.25);
+        this.rotateY(Math.PI * 0.25);
+
         setFinish(this.finish);
     }
 
@@ -311,4 +314,6 @@ export class Cube extends Group {
     public disorder() {
         
     }
+
+    
 };

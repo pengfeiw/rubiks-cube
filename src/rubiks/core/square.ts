@@ -29,13 +29,12 @@ export const createSquare = (color: Color, element: CubeElement) => {
     const square = new SquareMesh(element);
     square.add(mesh);
 
-    const geo2 = new PlaneGeometry(1, 1, 1);
     const mat2 = new MeshBasicMaterial({
         color: "black",
         side: DoubleSide
     });
-    
-    const plane = new Mesh(geo2, mat2);
+
+    const plane = new Mesh(geometry, mat2);
     plane.position.set(0, 0, -0.01); // 移动靠后一点，防止重叠造成闪烁
     square.add(plane);
 
