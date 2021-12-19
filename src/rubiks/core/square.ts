@@ -1,7 +1,10 @@
-import {Shape, ShapeGeometry, MeshBasicMaterial, Mesh, Color, Object3D, Group, Plane, PlaneGeometry, DoubleSide} from "three";
+import {Shape, ShapeGeometry, MeshBasicMaterial, Mesh, Color, Object3D, Group, Plane, PlaneGeometry, DoubleSide, TextureLoader, Vector3} from "three";
 import {CubeElement} from "./cubeData";
 
-export const createSquare = (color: Color, element: CubeElement) => {
+const textureLoader = new TextureLoader();
+
+
+export const createSquare = (color: Color, element: CubeElement, withLogo?: boolean) => {
     const squareShape = new Shape();
     const x = 0, y = 0;
     // top
@@ -42,6 +45,20 @@ export const createSquare = (color: Color, element: CubeElement) => {
     const posY = element.pos.y;
     const posZ = element.pos.z;
     square.position.set(posX, posY, posZ);
+
+    if (withLogo) {
+        textureLoader.load("https://pengfeiw.github.io/assests/logo/w.png", (texture) => {
+            const geo2 = new PlaneGeometry(1, 1, 1);
+            const mat3 = new MeshBasicMaterial({
+                map: texture,
+                transparent: true
+            });
+            const avatarPlane = new Mesh(geo2, mat3);
+            avatarPlane.position.set(0, 0, 0.01);
+            avatarPlane.scale.set(0.8, 0.8, 0.8);
+            square.add(avatarPlane);
+        });
+    }
 
     square.lookAt(element.pos.clone().add(element.normal));
     return square;

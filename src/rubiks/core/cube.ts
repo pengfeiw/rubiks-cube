@@ -49,9 +49,12 @@ export class Cube extends Group {
 
         this.data = new CubeData(order);
 
-        for (let i = 0; i < this.data.elements.length; i++) {
-            const square = createSquare(new Color(this.data.elements[i].color), this.data.elements[i]);
 
+        for (let i = 0; i < this.data.elements.length; i++) {
+            const ele = this.data.elements[i];
+            // const xy = (Math.floor(order % 2) - 1) * this.data.elementSize * 0.5;
+            const withLogo = ele.normal.equals(new Vector3(0, 0, 1)) && ele.pos.equals(new Vector3(0, 0, order / 2 * this.data.elementSize));
+            const square = createSquare(new Color(this.data.elements[i].color), this.data.elements[i], withLogo);
             this.add(square);
         }
 
@@ -312,8 +315,8 @@ export class Cube extends Group {
      * 打乱
      */
     public disorder() {
-        
+
     }
 
-    
+
 };
