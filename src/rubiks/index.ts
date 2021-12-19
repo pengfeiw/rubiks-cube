@@ -25,7 +25,7 @@ class Rubiks {
     private _controls: Control[] = [];
     public constructor(container: Element) {
         this.camera = createCamera();
-        this.scene = createScene("white");
+        this.scene = createScene("#478967");
         this.renderer = createRenderer();
         container.appendChild(this.renderer.domElement);
 

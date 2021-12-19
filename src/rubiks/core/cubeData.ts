@@ -24,7 +24,7 @@ class CubeData {
         return this._size;
     }
     public elements: CubeElement[] = [];
-    public constructor(cubeOrder = 3, colors: CubeColor = ["red", "orange", "yellow", "green", "cyan", "blue"]) {
+    public constructor(cubeOrder = 3, colors: CubeColor = ["#fb3636", "#ff9351", "#fade70", "#9de16f", "#51acfa", "#da6dfa"]) {
         this.cubeOrder = cubeOrder;
         this.colors = colors;
         this.initElements();
