@@ -28,7 +28,7 @@ class Rubiks {
         this.scene = createScene("white");
         this.renderer = createRenderer();
         container.appendChild(this.renderer.domElement);
-        
+
         // auto resize
         window.addEventListener("resize", () => {
             setSize(container, this.camera, this.renderer);
@@ -36,6 +36,8 @@ class Rubiks {
         });
         setSize(container, this.camera, this.renderer);
         this.setOrder(3);
+
+        this.startAnimation();
     }
 
     public setOrder(order: number) {
@@ -68,12 +70,32 @@ class Rubiks {
      */
     public disorder() {
         if (this.cube) {
-            
+
         }
     }
 
     private render() {
         this.renderer.render(this.scene, this.camera);
+    }
+
+    private startAnimation() {
+        const animation = (time: number) => {
+            time /= 1000; // convert to seconds
+            if (this.cube) {
+                if (time < 2) {
+                    this.cube.position.z = (-1  + time / 2) * 100;
+                } else {
+                    this.cube.position.z = 0;
+                }
+                const dis = time;
+                this.cube.position.y = Math.sin(dis) * 0.3;
+            }
+
+            this.render();
+            requestAnimationFrame(animation);
+        };
+
+        requestAnimationFrame(animation);
     }
 }
 
