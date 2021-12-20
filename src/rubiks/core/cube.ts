@@ -216,21 +216,44 @@ export class Cube extends Group {
     /**
      * 旋转后需要更新 cube 的状态
      */
-    public afterRotate() {
-        // 旋转至正位，有时旋转的不是90度的倍数，需要修正到90度的倍数
-        const rightAnglePI = Math.PI * 0.5;
-        const exceedAnglePI = Math.abs(this.state.rotateAnglePI) % rightAnglePI;
-        let needRotateAnglePI = exceedAnglePI > rightAnglePI * 0.5 ? rightAnglePI - exceedAnglePI : -exceedAnglePI;
-        needRotateAnglePI = this.state.rotateAnglePI > 0 ? needRotateAnglePI : -needRotateAnglePI;
+    public getAfterRotateAnimation() {
+        const needRotateAnglePI = this.getNeededRotateAngle();
+        const rotateSpeed = Math.PI * 0.5 / 1000; // 1s 旋转90度
+        let rotatedAngle = 0;
 
-        const rotateMat = new Matrix4();
-        rotateMat.makeRotationAxis(this.state.rotateAxisLocal!, needRotateAnglePI);
+        let rotateTick = (tick: number): boolean => {
+            console.log("this", this);
+            if (rotatedAngle < Math.abs(needRotateAnglePI)) {
+                let curAngle = tick * rotateSpeed
+                if (curAngle > Math.abs(needRotateAnglePI)) {
+                    curAngle = needRotateAnglePI;
+                }
 
-        for (let i = 0; i < this.state.activeSquares.length; i++) {
-            this.state.activeSquares[i].applyMatrix4(rotateMat);
-            this.state.activeSquares[i].updateMatrix();
+                let angle = curAngle - rotatedAngle;
+                angle = needRotateAnglePI > 0 ? angle : -angle;
+                rotatedAngle = curAngle;
+                const rotateMat = new Matrix4();
+                rotateMat.makeRotationAxis(this.state.rotateAxisLocal!, angle);
+                for (let i = 0; i < this.state.activeSquares.length; i++) {
+                    this.state.activeSquares[i].applyMatrix4(rotateMat);
+                    this.state.activeSquares[i].updateMatrix();
+                }
+                return true;
+            } else {
+                this.updateStateAfterRotate();
+            }
+            return false;
         }
 
+        return rotateTick;
+    }
+
+    /**
+     * 旋转后更新状态
+     */
+    private updateStateAfterRotate() {
+        // 旋转至正位，有时旋转的不是90度的倍数，需要修正到90度的倍数
+        const needRotateAnglePI = this.getNeededRotateAngle();
         this.state.rotateAnglePI += needRotateAnglePI;
 
         // 更新 data：CubeElement 的状态，旋转后法向量、位置等发生了变化
@@ -275,6 +298,15 @@ export class Cube extends Group {
         }
 
         this.state.resetState();
+    }
+
+    private getNeededRotateAngle() {
+        const rightAnglePI = Math.PI * 0.5;
+        const exceedAnglePI = Math.abs(this.state.rotateAnglePI) % rightAnglePI;
+        let needRotateAnglePI = exceedAnglePI > rightAnglePI * 0.5 ? rightAnglePI - exceedAnglePI : -exceedAnglePI;
+        needRotateAnglePI = this.state.rotateAnglePI > 0 ? needRotateAnglePI : -needRotateAnglePI;
+
+        return needRotateAnglePI;
     }
     /**
      * 获取一个粗糙的魔方屏幕尺寸

@@ -122,9 +122,15 @@ abstract class Control {
 
     protected operateEnd() {
         if (this._square) {
-            this.cube.afterRotate();
-            this.renderer.render(this.scene, this.camera);
-
+            const rotateAnimation = this.cube.getAfterRotateAnimation();
+            const animation = (time: number) => {
+                const next = rotateAnimation(time);
+                this.renderer.render(this.scene, this.camera);
+                if (next) {
+                    requestAnimationFrame(animation);
+                }
+            }
+            requestAnimationFrame(animation);
             setFinish(this.cube.finish);
         }
 
