@@ -218,22 +218,25 @@ export class Cube extends Group {
      */
     public getAfterRotateAnimation() {
         const needRotateAnglePI = this.getNeededRotateAngle();
-        const rotateSpeed = Math.PI * 0.5 / 1000; // 1s 旋转90度
+        const rotateSpeed = Math.PI * 0.5 / 500; // 1s 旋转90度
         let rotatedAngle = 0;
-
+        let lastTick: number;
         let rotateTick = (tick: number): boolean => {
-            console.log("this", this);
+            if (!lastTick) {
+                lastTick = tick;
+            }
+            const time = tick - lastTick;
+            lastTick = tick;
             if (rotatedAngle < Math.abs(needRotateAnglePI)) {
-                let curAngle = tick * rotateSpeed
-                if (curAngle > Math.abs(needRotateAnglePI)) {
-                    curAngle = needRotateAnglePI;
+                let curAngle = time * rotateSpeed
+                if (rotatedAngle + curAngle > Math.abs(needRotateAnglePI)) {
+                    curAngle = Math.abs(needRotateAnglePI) - rotatedAngle;
                 }
-
-                let angle = curAngle - rotatedAngle;
-                angle = needRotateAnglePI > 0 ? angle : -angle;
-                rotatedAngle = curAngle;
+                rotatedAngle += curAngle;
+                curAngle = needRotateAnglePI > 0 ? curAngle : -curAngle;
+                
                 const rotateMat = new Matrix4();
-                rotateMat.makeRotationAxis(this.state.rotateAxisLocal!, angle);
+                rotateMat.makeRotationAxis(this.state.rotateAxisLocal!, curAngle);
                 for (let i = 0; i < this.state.activeSquares.length; i++) {
                     this.state.activeSquares[i].applyMatrix4(rotateMat);
                     this.state.activeSquares[i].updateMatrix();
@@ -241,8 +244,8 @@ export class Cube extends Group {
                 return true;
             } else {
                 this.updateStateAfterRotate();
+                return false;
             }
-            return false;
         }
 
         return rotateTick;
