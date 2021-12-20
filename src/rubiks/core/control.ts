@@ -128,12 +128,12 @@ abstract class Control {
                 this.renderer.render(this.scene, this.camera);
                 if (next) {
                     requestAnimationFrame(animation);
+                } else {
+                    setFinish(this.cube.finish);
                 }
             }
             requestAnimationFrame(animation);
-            setFinish(this.cube.finish);
         }
-
         this.start = false;
         this._square = null;
     }

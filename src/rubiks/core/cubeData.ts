@@ -30,7 +30,27 @@ class CubeData {
         this.initElements();
     };
 
-    private initElements() {
+    /**
+     * 初始化数据
+     * @param localDataFirst 是否从 localStorage 读取数据 
+     */
+    private initElements(localDataFirst = true) {
+        if (localDataFirst && localStorage) {
+            this.elements = this.getLocalData();
+        }
+
+        if (this.elements.length === this.cubeOrder * this.cubeOrder * 6) {
+            return;
+        }
+
+        this.initialFinishData();
+    }
+
+    /**
+     * 创建复原的数据
+     */
+    public initialFinishData() {
+        this.elements = [];
         const border = (this.cubeOrder * this._size) / 2 - 0.5;
 
         // top and bottom
@@ -85,6 +105,44 @@ class CubeData {
         }
 
         // this.elements.forEach((ele) => console.log(ele.pos));
+    }
+
+    /**
+     * 保存数据至 localStorage
+     */
+    public saveDataToLocal() {
+        const data = JSON.stringify(this.elements);
+
+        if (localStorage) {
+            localStorage.setItem(`${this.cubeOrder}-Rubik`, data);
+        }
+    }
+
+    /**
+     * 从 localStorage 读取数据
+     * @returns 
+     */
+    public getLocalData() {
+        if (localStorage) {
+            const data = localStorage.getItem(`${this.cubeOrder}-Rubik`);
+
+            if (data) {
+                const parseData: {
+                    color: ColorRepresentation;
+                    pos: {x: number; y: number; z: number},
+                    normal: {x: number; y: number; z: number}
+                }[] = JSON.parse(data);
+
+                parseData.forEach((item) => {
+                    item.normal = new Vector3(item.normal.x, item.normal.y, item.normal.z);
+                    item.pos = new Vector3(item.pos.x, item.pos.y, item.pos.z);
+                });
+
+                return parseData as CubeElement[];
+            }
+        }
+
+        return [];
     }
 }
 

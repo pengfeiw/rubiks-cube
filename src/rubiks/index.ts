@@ -74,6 +74,19 @@ class Rubiks {
         }
     }
 
+    /**
+     * 还原
+     */
+    public restore() {
+        if (this.cube) {
+            this.cube.restore();
+            debugger;
+            this.render();
+        } else {
+            console.error("RESTORE_ERROR: this.cube is undefined.");
+        }
+    }
+
     private render() {
         this.renderer.render(this.scene, this.camera);
     }
@@ -83,7 +96,7 @@ class Rubiks {
             time /= 1000; // convert to seconds
             if (this.cube) {
                 if (time < 2) {
-                    this.cube.position.z = (-1  + time / 2) * 100;
+                    this.cube.position.z = (-1 + time / 2) * 100;
                 } else {
                     this.cube.position.z = 0;
                 }

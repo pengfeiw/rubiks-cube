@@ -2,7 +2,7 @@ import {Camera, Color, Group, Matrix4, Vector2, Vector3} from "three";
 import {setFinish} from "./statusbar";
 import {getAngleBetweenTwoVector2, equalDirection} from "../util/math";
 import {ndcToScreen} from "../util/transform";
-import CubeData from "./cubeData";
+import CubeData, {CubeElement} from "./cubeData";
 import CubeState, {RotateDirection} from "./cubeState";
 import {createSquare, SquareMesh} from "./square";
 
@@ -18,7 +18,7 @@ const getTemPos = (square: SquareMesh, squareSize: number) => {
 
 export class Cube extends Group {
     private data: CubeData;
-    public state: CubeState;
+    public state!: CubeState;
     public get squares() {
         return this.children as SquareMesh[];
     }
@@ -49,21 +49,25 @@ export class Cube extends Group {
 
         this.data = new CubeData(order);
 
+        this.createChildrenByData();
+
+        this.rotateX(Math.PI * 0.25);
+        this.rotateY(Math.PI * 0.25);
+        setFinish(this.finish);
+    }
+
+    private createChildrenByData() {
+        this.remove(...this.children);
 
         for (let i = 0; i < this.data.elements.length; i++) {
             const ele = this.data.elements[i];
             // const xy = (Math.floor(order % 2) - 1) * this.data.elementSize * 0.5;
-            const withLogo = ele.normal.equals(new Vector3(0, 0, 1)) && ele.pos.equals(new Vector3(0, 0, order / 2 * this.data.elementSize));
+            const withLogo = ele.normal.equals(new Vector3(0, 0, 1)) && ele.pos.equals(new Vector3(0, 0, this.order / 2 * this.data.elementSize));
             const square = createSquare(new Color(this.data.elements[i].color), this.data.elements[i], withLogo);
             this.add(square);
         }
 
         this.state = new CubeState(this.squares);
-
-        this.rotateX(Math.PI * 0.25);
-        this.rotateY(Math.PI * 0.25);
-
-        setFinish(this.finish);
     }
 
     /**
@@ -234,7 +238,7 @@ export class Cube extends Group {
                 }
                 rotatedAngle += curAngle;
                 curAngle = needRotateAnglePI > 0 ? curAngle : -curAngle;
-                
+
                 const rotateMat = new Matrix4();
                 rotateMat.makeRotationAxis(this.state.rotateAxisLocal!, curAngle);
                 for (let i = 0; i < this.state.activeSquares.length; i++) {
@@ -244,6 +248,7 @@ export class Cube extends Group {
                 return true;
             } else {
                 this.updateStateAfterRotate();
+                this.data.saveDataToLocal();
                 return false;
             }
         }
@@ -303,6 +308,8 @@ export class Cube extends Group {
         this.state.resetState();
     }
 
+
+
     private getNeededRotateAngle() {
         const rightAnglePI = Math.PI * 0.5;
         const exceedAnglePI = Math.abs(this.state.rotateAnglePI) % rightAnglePI;
@@ -353,5 +360,10 @@ export class Cube extends Group {
 
     }
 
-
+    public restore() {
+        this.data.initialFinishData();
+        this.data.saveDataToLocal();
+        this.createChildrenByData();
+        setFinish(this.finish);
+    }
 };
