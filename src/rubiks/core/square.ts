@@ -4,7 +4,7 @@ import {CubeElement} from "./cubeData";
 const textureLoader = new TextureLoader();
 
 
-export const createSquare = (color: Color, element: CubeElement, withLogo?: boolean) => {
+export const createSquare = (color: Color, element: CubeElement) => {
     const squareShape = new Shape();
     const x = 0, y = 0;
     // top
@@ -46,7 +46,7 @@ export const createSquare = (color: Color, element: CubeElement, withLogo?: bool
     const posZ = element.pos.z;
     square.position.set(posX, posY, posZ);
 
-    if (withLogo) {
+    if (element.withLogo) {
         textureLoader.load("https://pengfeiw.github.io/assests/logo/w.png", (texture) => {
             const geo2 = new PlaneGeometry(1, 1, 1);
             const mat3 = new MeshBasicMaterial({

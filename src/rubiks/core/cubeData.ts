@@ -6,6 +6,7 @@ export interface CubeElement {
     color: ColorRepresentation;
     pos: Vector3;
     normal: Vector3;
+    withLogo?: boolean;
 }
 
 type CubeColor = [ColorRepresentation, ColorRepresentation, ColorRepresentation, ColorRepresentation, ColorRepresentation, ColorRepresentation];
@@ -76,7 +77,7 @@ class CubeData {
                 this.elements.push({
                     color: this.colors[2],
                     pos: new Vector3(-border - this._size * 0.5, y, z),
-                    normal: new Vector3(-1, 0, 0)
+                    normal: new Vector3(-1, 0, 0),
                 });
 
                 this.elements.push({
@@ -93,7 +94,8 @@ class CubeData {
                 this.elements.push({
                     color: this.colors[4],
                     pos: new Vector3(x, y, border + this._size * 0.5),
-                    normal: new Vector3(0, 0, 1)
+                    normal: new Vector3(0, 0, 1),
+                    withLogo: x === 0 && y === 0
                 });
 
                 this.elements.push({

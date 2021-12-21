@@ -60,10 +60,7 @@ export class Cube extends Group {
         this.remove(...this.children);
 
         for (let i = 0; i < this.data.elements.length; i++) {
-            const ele = this.data.elements[i];
-            // const xy = (Math.floor(order % 2) - 1) * this.data.elementSize * 0.5;
-            const withLogo = ele.normal.equals(new Vector3(0, 0, 1)) && ele.pos.equals(new Vector3(0, 0, this.order / 2 * this.data.elementSize));
-            const square = createSquare(new Color(this.data.elements[i].color), this.data.elements[i], withLogo);
+            const square = createSquare(new Color(this.data.elements[i].color), this.data.elements[i]);
             this.add(square);
         }
 
