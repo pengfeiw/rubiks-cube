@@ -16,7 +16,12 @@
         }
 
         h1 {
+            position: fixed;
+            right: 5px;
+            bottom: 10px;
             font-size: 18px;
+            font-weight: normal;
+            writing-mode: vertical-rl;
         }
 
         #container {
@@ -50,6 +55,7 @@
             width: 50px;
             display: none;
         }
+
         #restore {
             width: 50px;
         }
@@ -59,7 +65,7 @@
 <body>
     <div id="container"></div>
     <div id="status">
-        <h1 class="status-item">在线魔方游戏</h1>
+        <h1>魔方</h1>
         <div class="status-item">
             <label for="finish">状态: </label>
             <span id="finish"></span>

@@ -80,7 +80,6 @@ class Rubiks {
     public restore() {
         if (this.cube) {
             this.cube.restore();
-            debugger;
             this.render();
         } else {
             console.error("RESTORE_ERROR: this.cube is undefined.");
