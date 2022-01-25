@@ -11,7 +11,7 @@ ThreeJs 制作的魔方游戏，支持自定义魔方阶级（目前界面上只
 1. 安装
 
 ```shell
-npm run install
+npm install
 ```
 
 2. 运行
