@@ -2,7 +2,7 @@ import {PerspectiveCamera} from "three";
 
 const createCamera = () => {
     const camera = new PerspectiveCamera(
-        35,
+        45,
         1,
         0.1,
         100
