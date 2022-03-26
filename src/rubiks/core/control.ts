@@ -37,6 +37,7 @@ abstract class Control {
     protected camera: PerspectiveCamera;
     protected _square: SquareMesh | null = null;
     private start = false;
+    private lastOperateUnfinish = false;
     private startPos: Vector2 = new Vector2();
     protected get domElement() {
         return this.renderer.domElement;
@@ -79,6 +80,9 @@ abstract class Control {
     }
     public abstract dispose(): void;
     protected operateStart(offsetX: number, offsetY: number) {
+        if (this.start) {
+            return;
+        }
         this.start = true;
         this.startPos = new Vector2()
         const intersect = this.getIntersects(offsetX, offsetY);
@@ -93,7 +97,7 @@ abstract class Control {
     }
 
     protected operateDrag(offsetX: number, offsetY: number, movementX: number, movementY: number) {
-        if (this.start) {
+        if (this.start && this.lastOperateUnfinish === false) {
             if (this._square) {
                 const curMousePos = new Vector2(offsetX, offsetY);
                 this.cube.rotateOnePlane(this.startPos, curMousePos, this._square, this.camera, {w: this.domElement.clientWidth, h: this.domElement.clientHeight});
@@ -114,28 +118,32 @@ abstract class Control {
                 const moveVect = new Vector2(dx, dy);
                 const rotateDir = moveVect.rotateAround(new Vector2(0, 0), Math.PI * 0.5);
 
-                rotateAroundWorldAxis(this.cube, new Vector3(rotateDir.x, rotateDir.y, 0),rotateAngle);
+                rotateAroundWorldAxis(this.cube, new Vector3(rotateDir.x, rotateDir.y, 0), rotateAngle);
             }
             this.renderer.render(this.scene, this.camera);
         }
     }
 
     protected operateEnd() {
-        if (this._square) {
-            const rotateAnimation = this.cube.getAfterRotateAnimation();
-            const animation = (time: number) => {
-                const next = rotateAnimation(time);
-                this.renderer.render(this.scene, this.camera);
-                if (next) {
-                    requestAnimationFrame(animation);
-                } else {
-                    setFinish(this.cube.finish);
+        if (this.lastOperateUnfinish === false) {
+            if (this._square) {
+                const rotateAnimation = this.cube.getAfterRotateAnimation();
+                this.lastOperateUnfinish = true;
+                const animation = (time: number) => {
+                    const next = rotateAnimation(time);
+                    this.renderer.render(this.scene, this.camera);
+                    if (next) {
+                        requestAnimationFrame(animation);
+                    } else {
+                        setFinish(this.cube.finish);
+                        this.lastOperateUnfinish = false;
+                    }
                 }
+                requestAnimationFrame(animation);
             }
-            requestAnimationFrame(animation);
+            this.start = false;
+            this._square = null;
         }
-        this.start = false;
-        this._square = null;
     }
 }
 
@@ -146,6 +154,7 @@ export class MouseControl extends Control {
         this.mousedownHandle = this.mousedownHandle.bind(this);
         this.mouseupHandle = this.mouseupHandle.bind(this);
         this.mousemoveHandle = this.mousemoveHandle.bind(this);
+        this.mouseoutHandle = this.mouseoutHandle.bind(this);
 
         this.init();
     }
@@ -158,7 +167,13 @@ export class MouseControl extends Control {
 
     public mouseupHandle(event: MouseEvent) {
         event.preventDefault();
+        console.log("mouseup");
 
+        this.operateEnd();
+    }
+
+    public mouseoutHandle(event: MouseEvent) {
+        event.preventDefault();
         this.operateEnd();
     }
 
@@ -172,11 +187,13 @@ export class MouseControl extends Control {
         this.domElement.addEventListener("mousedown", this.mousedownHandle);
         this.domElement.addEventListener("mouseup", this.mouseupHandle);
         this.domElement.addEventListener("mousemove", this.mousemoveHandle);
+        this.domElement.addEventListener("mouseout", this.mouseoutHandle);
     }
     public dispose(): void {
         this.domElement.removeEventListener("mousedown", this.mousedownHandle);
         this.domElement.removeEventListener("mouseup", this.mouseupHandle);
         this.domElement.removeEventListener("mousemove", this.mousemoveHandle);
+        this.domElement.removeEventListener("mouseout", this.mouseoutHandle);
     }
 }
 
